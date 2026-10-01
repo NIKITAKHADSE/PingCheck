@@ -1,0 +1,50 @@
+.account-picker{position:relative;margin:12px 0 0;flex-shrink:0}
+.sidebar>.account-picker+nav{min-height:0;overflow-y:auto;flex:1;padding-bottom:12px}
+.account-picker-trigger{display:flex;align-items:center;gap:9px;width:100%;padding:10px 8px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(255,255,255,.05);color:inherit;text-align:left}
+.account-picker-avatar{width:34px;height:34px;flex-shrink:0;display:grid;place-items:center;border-radius:50%;background:#e9edf3;color:#8896a8}
+.account-picker-name{flex:1;min-width:0;font-size:12px;font-weight:700;overflow-wrap:anywhere}
+.account-picker-name small{display:block;font-size:10px;font-weight:400;opacity:.65;margin-top:3px}
+.account-picker-panel{position:absolute;top:calc(100% + 6px);left:0;width:310px;max-width:calc(100vw - 32px);z-index:65;border:1px solid #d9dde3;background:#fff;color:#25333d;border-radius:7px;padding:6px;box-shadow:0 12px 32px #0002}
+.account-picker-caption{padding:9px 8px;font-size:10px;color:#778392;text-transform:uppercase;letter-spacing:.07em}
+.account-picker-list{max-height:260px;overflow-y:auto}
+.account-picker-list p{font-size:12px;padding:4px 9px;overflow-wrap:anywhere}
+.account-picker-item{display:flex;align-items:center;gap:10px;padding:10px 8px;border-radius:4px;font-size:13px;overflow-wrap:anywhere}
+.account-picker-item:hover,.account-picker-item:focus-visible{background:#eef5ff}
+.account-picker-item small{display:block;font-size:10px;color:#78838f;margin-top:3px}
+.account-picker-add{display:flex;align-items:center;justify-content:center;gap:8px;border:1px solid #d5d9de;border-radius:5px;padding:8px;margin:7px 2px 2px;font-size:12px;background:#fff}
+.account-picker-add:hover{background:#f4f7fa}
+.account-picker-trigger:focus-visible,.account-picker-add:focus-visible,.new-account-page a:focus-visible,.new-account-channel:focus-visible{outline:3px solid #4895ff;outline-offset:3px}
+.instagram-account-row:target{outline:2px solid #3989e8;outline-offset:3px;scroll-margin-top:24px}
+.new-account-page{display:grid;grid-template-columns:44.3% 55.7%;min-height:100dvh;background:#fff;color:#252525;border-top:4px solid #fbf2ff}
+.new-account-intro{background:#f5f5f5;display:flex;flex-direction:column;padding:46px clamp(30px,7.5vw,145px) 60px;min-height:calc(100dvh - 4px)}
+.new-account-brand{font-size:24px;letter-spacing:-1.2px;font-weight:800;align-self:flex-start}
+.new-account-welcome{margin:auto 0;padding:60px 0}
+.new-account-welcome h1{font-size:clamp(30px,2.5vw,48px);line-height:1.2;letter-spacing:-1.7px;font-weight:800;white-space:nowrap}
+.new-account-welcome p{font-size:13px;color:#768294;margin-top:27px}
+.new-account-back{display:inline-flex;align-items:center;gap:12px;align-self:flex-start;font-size:13px;color:#0784ff}
+.new-account-art{width:132px;height:175px;position:relative;margin:0 0 35px 8px}
+.account-balloon{position:absolute;width:50px;height:57px;background:#97e48d;border-radius:50%;border-left:4px solid #d71574;transform:rotate(12deg);left:12px;top:0}
+.account-balloon:after{content:'';position:absolute;width:14px;height:42px;border-left:2px dashed #d71574;top:54px;left:25px;transform:rotate(-12deg)}
+.account-balloon.two{left:64px;top:13px;transform:rotate(-17deg)}
+.account-gift{position:absolute;bottom:10px;left:21px;width:85px;height:83px;display:grid;place-items:center;transform:rotate(-9deg);color:#a8eb7e;background:#8036d1;border-radius:13px;box-shadow:-10px 12px 0 -3px #df3986}
+.new-account-channels{display:flex;align-items:center;justify-content:center;padding:65px 40px}
+.new-account-channel-list{width:100%;max-width:414px;display:grid;gap:13px}
+.new-account-channel{display:flex;align-items:center;gap:17px;width:100%;min-height:132px;padding:27px 30px;text-align:left;border:1px solid transparent;border-radius:8px;background:#fff;color:#252525;box-shadow:0 8px 23px #1c345b0b;transition:box-shadow .15s,border-color .15s}
+.new-account-channel:not(:disabled):hover{border-color:#dfb6ee;box-shadow:0 9px 27px #57347720}
+.new-account-channel-icon{flex-shrink:0;width:43px;height:43px;display:grid;place-items:center;border-radius:50%;color:#fff}
+.new-account-channel-icon.instagram{background:linear-gradient(35deg,#ffcc60,#ff326c 50%,#9b36c0)}
+.new-account-channel-icon.tiktok{background:linear-gradient(130deg,#666,#111)}
+.new-account-channel-icon.whatsapp{background:#18d768}
+.new-account-channel-icon.messenger{background:linear-gradient(#04bcff,#0875ff)}
+.new-account-channel-icon.telegram{background:linear-gradient(#29b6fc,#0095cf)}
+.new-account-channel-copy{flex:1;min-width:0;display:grid;gap:7px}
+.new-account-channel-copy strong{font-size:19px;line-height:1.2;letter-spacing:-.4px}
+.new-account-channel-copy>span{font-size:12px;color:#728095;line-height:1.45}
+.new-account-channel-copy small{font-size:10px;color:#7e8793}
+.new-account-channel-arrow{flex-shrink:0;color:#b179b7}
+.new-account-channel:disabled{cursor:default}
+.new-account-channel.unavailable{background:#fdfdfd}
+.new-account-error{padding:14px 16px;border:1px solid #edbebe;border-radius:8px;background:#fff6f6;color:#9a3535;font-size:12px;line-height:1.7;overflow-wrap:anywhere}
+.new-account-error a{display:flex;align-items:center;gap:5px;margin-top:9px;font-weight:700;text-decoration:underline}
+@media(max-width:1000px){.new-account-intro{padding:35px 32px}.new-account-welcome h1{white-space:normal}.new-account-channels{padding:40px 25px}.new-account-channel{padding:24px 20px}}
+@media(max-width:640px){.new-account-page{grid-template-columns:1fr}.new-account-intro{min-height:0;padding:24px}.new-account-brand{font-size:21px}.new-account-welcome{padding:30px 0 20px}.new-account-art{display:none}.new-account-welcome h1{font-size:34px}.new-account-welcome p{margin-top:15px}.new-account-channels{padding:26px 20px 40px}.new-account-channel{min-height:115px}.new-account-channel-copy strong{font-size:18px}}

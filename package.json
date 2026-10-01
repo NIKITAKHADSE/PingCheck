@@ -1,0 +1,24 @@
+{
+  "name": "flowvik-node-react",
+  "version": "5.0.0",
+  "private": true,
+  "type": "module",
+  "description": "FlowVik ManyChat-like Instagram automation SaaS - Node.js + React + Neon PostgreSQL",
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "install:all": "npm install",
+    "setup": "node server/src/setup.js",
+    "dev": "concurrently -n SERVER,CLIENT -c auto \"npm run dev -w server\" \"npm run dev -w client\"",
+    "start": "concurrently -n SERVER,CLIENT -c auto \"npm run start -w server\" \"npm run preview -w client -- --host 0.0.0.0\"",
+    "build": "npm run build -w client",
+    "test": "npm run test -w server",
+    "check": "node --check server/src/index.js && node --check server/src/db.js && node --check server/src/meta.js && node --check server/src/automation.js && node --check server/src/security.js",
+    "db:migrate": "npm run db:migrate -w server"
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  }
+}

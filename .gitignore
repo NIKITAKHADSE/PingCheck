@@ -1,0 +1,11 @@
+node_modules/
+client/dist/
+.env
+server/data/db.json
+npm-debug.log*
+.DS_Store
+cloudflared.exe
+*-runtime.*.log
+instagram-*.log
+
+.vercel
