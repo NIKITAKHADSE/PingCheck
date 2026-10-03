@@ -8,9 +8,10 @@ export const ROOT_DIR = path.basename(workingDirectory).toLowerCase() === 'serve
 dotenv.config({ path: path.join(ROOT_DIR, '.env') });
 
 const env = (name, fallback = '') => String(process.env[name] ?? fallback).trim();
+const normalizeOrigin = value => String(value || '').trim().replace(/\/+$/, '');
 
 const clientUrls = (process.env.CLIENT_URL || 'http://localhost:5173')
-  .split(',').map((x) => x.trim()).filter(Boolean);
+  .split(',').map(normalizeOrigin).filter(Boolean);
 
 export const config = {
   ai: { apiKey: env('OPENAI_API_KEY'), model: env('OPENAI_MODEL', 'gpt-4.1-mini') },
