@@ -1,10 +1,10 @@
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
 import dotenv from 'dotenv';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-export const ROOT_DIR = path.resolve(__dirname, '../..');
+const workingDirectory = process.cwd();
+export const ROOT_DIR = path.basename(workingDirectory).toLowerCase() === 'server'
+  ? path.resolve(workingDirectory, '..')
+  : workingDirectory;
 dotenv.config({ path: path.join(ROOT_DIR, '.env') });
 
 const env = (name, fallback = '') => String(process.env[name] ?? fallback).trim();
