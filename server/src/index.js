@@ -714,7 +714,7 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ ok: false, error: err.message || 'Server error.' });
 });
 
-if (!process.env.VERCEL) {
+if (!process.env.NETLIFY) {
   app.listen(config.port, config.host, () => {
     console.log(`\nPingCheck Node API running on http://localhost:${config.port}`);
     console.log(`Demo mode: ${config.demoMode ? 'ON' : 'OFF'}`);

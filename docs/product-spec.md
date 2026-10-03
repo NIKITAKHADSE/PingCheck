@@ -119,7 +119,7 @@ AI:
 
 Deployment-ready for:
 
-- Vercel frontend
+- Netlify frontend and serverless API
 - Railway / Render / AWS backend
 - PostgreSQL
 - Redis

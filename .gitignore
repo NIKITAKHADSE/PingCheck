@@ -8,4 +8,4 @@ cloudflared.exe
 *-runtime.*.log
 instagram-*.log
 
-.vercel
+.netlify
