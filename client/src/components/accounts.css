@@ -1,5 +1,6 @@
 .account-picker{position:relative;margin:12px 0 0;flex-shrink:0}
-.sidebar>.account-picker+nav{min-height:0;overflow-y:auto;flex:1;padding-bottom:12px}
+.sidebar>.account-picker+nav{min-height:0;overflow-y:auto;flex:1;padding-bottom:12px;scrollbar-width:none;-ms-overflow-style:none}
+.sidebar>.account-picker+nav::-webkit-scrollbar{display:none}
 .account-picker-trigger{display:flex;align-items:center;gap:9px;width:100%;padding:10px 8px;border:1px solid rgba(255,255,255,.14);border-radius:9px;background:rgba(255,255,255,.05);color:inherit;text-align:left}
 .account-picker-avatar{width:34px;height:34px;flex-shrink:0;display:grid;place-items:center;border-radius:50%;background:#e9edf3;color:#8896a8}
 .account-picker-name{flex:1;min-width:0;font-size:12px;font-weight:700;overflow-wrap:anywhere}

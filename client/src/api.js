@@ -8,7 +8,7 @@ export async function api(path, options = {}) {
 
   let response;
   try {
-    response = await fetch(`${API}${path}`, { ...options, headers });
+    response = await fetch(`${API}${path}`, { cache: 'no-store', ...options, headers });
   } catch {
     throw new Error(`Cannot reach PingCheck backend at ${API}. Make sure npm run dev is running.`);
   }

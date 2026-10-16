@@ -1,12 +1,13 @@
 import React, { useCallback, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Instagram, Workflow, MessageSquare } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Instagram, Workflow, MessageSquare } from 'lucide-react';
 import { api } from '../api.js';
 import GoogleSignIn from '../components/GoogleSignIn.jsx';
 
 export default function Signup() {
   const navigate = useNavigate();
   const [form, setForm] = useState({ name: '', email: '', password: '' });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
   const success = useCallback(() => navigate('/dashboard/integrations', { replace: true }), [navigate]);
@@ -28,7 +29,7 @@ export default function Signup() {
 
   return <div className="login-page">
     <div className="login-art">
-      <div className="login-brand"><div className="brand-mark large">P</div><strong>PingCheck</strong></div>
+      <Link className="login-brand" to="/" aria-label="Go to PingCheck home"><div className="brand-mark large">P</div><strong>PingCheck</strong></Link>
       <div className="login-copy"><span className="eyebrow light">CREATE YOUR WORKSPACE</span><h1>Connect Instagram. Build the automation. Let PingCheck handle the comment.</h1><p>Each PingCheck account gets its own workspace and can connect one or more Instagram Professional accounts.</p></div>
       <div className="login-flow"><div><Instagram size={20}/> Connect IG</div><ArrowRight size={16}/><div><Workflow size={20}/> Build flow</div><ArrowRight size={16}/><div><MessageSquare size={20}/> Send DM</div></div>
     </div>
@@ -39,7 +40,7 @@ export default function Signup() {
         <div className="auth-divider"><span>or sign up with email</span></div>
         <label>Your name<input value={form.name} onChange={e=>setForm({...form,name:e.target.value})} autoComplete="name" /></label>
         <label>Email<input type="email" value={form.email} onChange={e=>setForm({...form,email:e.target.value})} autoComplete="email" /></label>
-        <label>Password<input type="password" value={form.password} onChange={e=>setForm({...form,password:e.target.value})} autoComplete="new-password" /></label>
+        <label>Password<div className="password-field"><input type={showPassword ? 'text' : 'password'} value={form.password} onChange={e=>setForm({...form,password:e.target.value})} autoComplete="new-password" /><button type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword}>{showPassword ? <EyeOff size={17}/> : <Eye size={17}/>}</button></div></label>
         {error && <div className="alert error">{error}</div>}
         <button className="btn primary full" disabled={busy}>{busy ? 'Creating account...' : 'Create Workspace'}<ArrowRight size={17}/></button>
         <div className="auth-bottom">Already have an account? <Link to="/login">Sign in</Link></div>

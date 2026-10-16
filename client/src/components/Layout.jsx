@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate, useLocation } from 'react-router-dom';
 import {
   LayoutDashboard, Workflow, LayoutTemplate, Inbox, Users, BarChart3,
-  Sparkles, BookOpen, PlugZap, UserRoundCog, Settings, LogOut, Menu, X
+  Sparkles, BookOpen, PlugZap, UserRoundCog, Settings, LogOut, Menu, X, ArrowLeft
 } from 'lucide-react';
 import { api } from '../api.js';
 import AccountMenu from './AccountMenu.jsx';
@@ -23,6 +23,7 @@ export default function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
   const automationLibrary = location.pathname.replace(/\/$/, '') === '/dashboard/automations';
+  const showBack = location.pathname.replace(/\/$/, '') !== '/dashboard';
 
   useEffect(() => {
     const loadProfile = () => api('/api/auth/me').then(result => { saveDatePreferences(result.workspace); setProfile(result); }).catch(() => {
@@ -47,7 +48,7 @@ export default function Layout() {
     <div className={`app-shell ${automationLibrary ? 'automation-shell' : ''}`}>
       <button className="mobile-menu" onClick={() => setOpen(true)}><Menu size={20}/></button>
       <aside className={`sidebar ${open ? 'open' : ''}`}>
-        <div className="brand-row"><div className="brand-mark">P</div><div><strong>PingCheck</strong><small>Instagram Automation</small></div><button className="sidebar-close" onClick={() => setOpen(false)}><X size={20}/></button></div>
+        <div className="brand-row"><Link className="brand-link" to="/" aria-label="Go to PingCheck home" onClick={() => setOpen(false)}><div className="brand-mark">P</div><div><strong>PingCheck</strong><small>Instagram Automation</small></div></Link><button className="sidebar-close" onClick={() => setOpen(false)}><X size={20}/></button></div>
         <AccountMenu profile={profile} onNavigate={() => setOpen(false)} />
         <nav>
           {groups.map((group, gi) => <div className="nav-group" key={gi}>
@@ -61,7 +62,10 @@ export default function Layout() {
         </div>
       </aside>
       {open && <div className="scrim" onClick={() => setOpen(false)} />}
-      <main className="main-content"><Outlet /></main>
+      <main className="main-content">
+        {showBack && <div className="global-back-row"><button className="global-back-button" onClick={() => window.history.length > 1 ? navigate(-1) : navigate('/dashboard')} aria-label="Go back"><ArrowLeft size={17}/><span>Back</span></button></div>}
+        <Outlet />
+      </main>
     </div>
   );
 }

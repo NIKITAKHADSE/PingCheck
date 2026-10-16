@@ -19,6 +19,7 @@ import Team from './pages/Team.jsx';
 import Settings from './pages/Settings.jsx';
 import NewAccount from './pages/NewAccount.jsx';
 import Privacy from './pages/Privacy.jsx';
+import Home from './pages/Home.jsx';
 
 function Protected() {
   const token = localStorage.getItem('flowvik_token');
@@ -37,7 +38,7 @@ export default function App() {
         <Route path="/privacy" element={<Privacy />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/dashboard/accounts/new" element={localStorage.getItem('flowvik_token') ? <ProtectedPage><NewAccount /></ProtectedPage> : <Navigate to="/login" replace />} />
-        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+        <Route path="/" element={<Home />} />
         <Route path="/dashboard" element={<Protected />}>
           <Route index element={<ProtectedPage><Overview /></ProtectedPage>} />
           <Route path="automations" element={<ProtectedPage><Automations /></ProtectedPage>} />

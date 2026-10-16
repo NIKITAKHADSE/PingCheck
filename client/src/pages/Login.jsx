@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowRight, Instagram, Zap } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Instagram, Zap } from 'lucide-react';
 import { api } from '../api.js';
 import GoogleSignIn from '../components/GoogleSignIn.jsx';
 
@@ -8,6 +8,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [email, setEmail] = useState('demo@flowvik.app');
   const [password, setPassword] = useState('demo12345');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
 
@@ -30,7 +31,7 @@ export default function Login() {
 
   return <div className="login-page">
     <div className="login-art">
-      <div className="login-brand"><div className="brand-mark large">P</div><strong>PingCheck</strong></div>
+      <Link className="login-brand" to="/" aria-label="Go to PingCheck home"><div className="brand-mark large">P</div><strong>PingCheck</strong></Link>
       <div className="login-copy"><span className="eyebrow light">INSTAGRAM-FIRST AUTOMATION</span><h1>Turn comments into conversations, leads and customers.</h1><p>Connect client Instagram Professional accounts and automate comment-to-DM workflows for posts, Reels and eligible ad-post comments.</p></div>
       <div className="login-flow"><div><Instagram size={20}/> Comment “PRICE”</div><ArrowRight size={16}/><div><Zap size={20}/> Auto DM</div><ArrowRight size={16}/><div>Lead captured</div></div>
     </div>
@@ -40,7 +41,7 @@ export default function Login() {
         <GoogleSignIn onSuccess={success} text="signin_with" />
         <div className="auth-divider"><span>or continue with email</span></div>
         <label>Email<input value={email} onChange={e=>setEmail(e.target.value)} type="email" autoComplete="email" /></label>
-        <label>Password<input value={password} onChange={e=>setPassword(e.target.value)} type="password" autoComplete="current-password" /></label>
+        <label>Password<div className="password-field"><input value={password} onChange={e=>setPassword(e.target.value)} type={showPassword ? 'text' : 'password'} autoComplete="current-password" /><button type="button" onClick={() => setShowPassword(value => !value)} aria-label={showPassword ? 'Hide password' : 'Show password'} aria-pressed={showPassword}>{showPassword ? <EyeOff size={17}/> : <Eye size={17}/>}</button></div></label>
         {error && <div className="alert error">{error}</div>}
         <button className="btn primary full" disabled={busy}>{busy ? 'Signing in...' : 'Enter Workspace'}<ArrowRight size={17}/></button>
         <div className="auth-bottom">New to PingCheck? <Link to="/signup">Create an account</Link></div>

@@ -14,7 +14,7 @@ import {
   metaConfigured, metaConfigurationIssues, createOAuthState, verifyOAuthState, buildOAuthUrl, exchangeCode,
   exchangeLongLivedToken, getProfile, subscribeWebhooks, getWebhookSubscription, normalizeWebhook, listMedia
 } from './meta.js';
-import { handleCommentEvent, matchesAutomation } from './automation.js';
+import { handleCommentEvent, handleMessageEvent, matchesAutomation } from './automation.js';
 import { organizeAutomation } from './automation-library.js';
 import { answerQuestion, workspaceContext } from './ai.js';
 import { dashboardSnapshot, liveAutomations } from './dashboard.js';
@@ -266,6 +266,10 @@ app.post('/api/automations', requireAuth, async (req, res) => {
     keyword: req.body?.keyword || 'PRICE', matchType: req.body?.matchType || 'CONTAINS',
     mediaId: req.body?.mediaId || '', publicReply: req.body?.publicReply || 'Sent you a DM! 🚀',
     privateReply: req.body?.privateReply || 'Hey {{first_name}} 👋 Thanks for your comment! Here are the details.',
+    requireFollow: req.body?.requireFollow !== false,
+    greetingReply: req.body?.greetingReply || 'Hi {{first_name}}! Thanks for commenting 👋',
+    followPrompt: req.body?.followPrompt || 'Please follow our Instagram account, then reply DONE and I’ll send the details.',
+    notFollowingReply: req.body?.notFollowingReply || 'I can’t confirm the follow yet. Please follow the account, wait a moment, then reply DONE again.',
     runs: 0, leads: 0,
     nodes: Array.isArray(req.body?.nodes) ? req.body.nodes : [],
     edges: Array.isArray(req.body?.edges) ? req.body.edges : [],
@@ -280,7 +284,7 @@ app.put('/api/automations/:id', requireAuth, async (req, res) => {
   await mutate((d) => {
     item = d.automations.find((a) => a.id === req.params.id && a.workspaceId === req.workspaceId);
     if (item) {
-      const allowed = ['name','triggerScope','instagramAccountId','keyword','matchType','mediaId','publicReply','privateReply','nodes','edges'];
+      const allowed = ['name','triggerScope','instagramAccountId','keyword','matchType','mediaId','publicReply','privateReply','requireFollow','greetingReply','followPrompt','notFollowingReply','nodes','edges'];
       for (const key of allowed) if (key in req.body) item[key] = req.body[key];
       item.updatedAt = now();
     }
@@ -499,6 +503,9 @@ app.put('/api/workspace', requireAuth, async (req, res) => {
 });
 
 app.get('/api/integrations/meta/status', requireAuth, async (req, res) => {
+  // Configuration changes during local development must never be served from
+  // a browser/proxy cache; this endpoint drives the connection readiness UI.
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate, private');
   const data = await readDb();
   const accounts = data.instagramAccounts.filter((a) => a.workspaceId === req.workspaceId);
   ok(res, {
@@ -652,7 +659,11 @@ app.get('/api/integrations/meta/accounts/:id/media', requireAuth, async (req, re
 });
 
 app.get('/api/webhooks/instagram', (req, res) => {
-  if (req.query['hub.mode'] === 'subscribe' && req.query['hub.verify_token'] === config.meta.verifyToken) {
+  if (
+    config.meta.verifyToken &&
+    req.query['hub.mode'] === 'subscribe' &&
+    req.query['hub.verify_token'] === config.meta.verifyToken
+  ) {
     return res.status(200).send(String(req.query['hub.challenge'] || ''));
   }
   return res.status(403).send('Forbidden');
@@ -676,6 +687,8 @@ app.post('/api/webhooks/instagram', async (req, res) => {
   for (const event of fresh) {
     if (event.type === 'COMMENT' && event.commentId) {
       setImmediate(() => handleCommentEvent(event).catch((e) => console.error('Automation error:', e)));
+    } else if (event.type === 'MESSAGE' && event.senderId) {
+      setImmediate(() => handleMessageEvent(event).catch((e) => console.error('Message automation error:', e)));
     }
   }
 });

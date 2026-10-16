@@ -193,6 +193,30 @@ export async function sendPrivateReply(accessToken, instagramUserId, commentId, 
   return payload;
 }
 
+export async function sendDirectMessage(accessToken, instagramUserId, recipientId, text) {
+  if (!instagramUserId) throw new Error('Instagram account ID is required to send a message.');
+  if (!recipientId) throw new Error('Instagram recipient ID is required to send a message.');
+  if (!String(text || '').trim()) throw new Error('Instagram message text is required.');
+  const response = await metaFetch(`${GRAPH}/${config.meta.version}/${encodeURIComponent(instagramUserId)}/messages`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ recipient: { id: recipientId }, message: { text } })
+  });
+  const payload = await readJson(response);
+  if (!response.ok) throw new Error(apiError(payload, 'Instagram message failed.'));
+  return payload;
+}
+
+export async function getMessagingProfile(accessToken, recipientId) {
+  const url = new URL(`${GRAPH}/${config.meta.version}/${encodeURIComponent(recipientId)}`);
+  url.searchParams.set('fields', 'name,username,profile_pic,is_user_follow_business,is_business_follow_user');
+  url.searchParams.set('access_token', accessToken);
+  const response = await metaFetch(url);
+  const payload = await readJson(response);
+  if (!response.ok) throw new Error(apiError(payload, 'Instagram follow status could not be checked.'));
+  return payload;
+}
+
 export async function sendPublicCommentReply(accessToken, commentId, text) {
   if (!text) return null;
   const response = await metaFetch(`${GRAPH}/${config.meta.version}/${commentId}/replies`, {
@@ -232,13 +256,13 @@ export function normalizeWebhook(payload) {
       });
     }
     for (const item of entry?.messaging || []) {
-      if (!item?.message) continue;
+      if (!item?.message || item.message.is_echo) continue;
       out.push({
         type: 'MESSAGE',
         externalId: String(item.message.mid || crypto.randomUUID()),
         accountId,
         senderId: item?.sender?.id ? String(item.sender.id) : '',
-        text: String(item?.message?.text || ''),
+        text: String(item?.message?.text || item?.postback?.title || ''),
         payload: item
       });
     }

@@ -1,6 +1,6 @@
-# PinkCheck v5 — ManyChat-style Automation SaaS with Neon
+# PingCheck v5 — ManyChat-style Automation SaaS with Neon
 
-PinkCheck is an Instagram-first automation SaaS starter for connecting Instagram Professional accounts and creating comment-to-DM workflows.
+PingCheck is an Instagram-first automation SaaS starter for connecting Instagram Professional accounts and creating comment-to-DM workflows.
 
 ## Stack
 
@@ -36,7 +36,7 @@ http://localhost:5173/login
 Demo credentials:
 
 ```text
-demo@pinkcheck.app
+demo@flowvik.app
 demo12345
 ```
 
@@ -64,7 +64,7 @@ Set `GOOGLE_CLIENT_ID` in `.env` after creating a Web Application OAuth client i
 
 ## Instagram connection model
 
-A signed-in PinkCheck user owns a workspace. Each workspace can store multiple connected Instagram Professional accounts. The Integrations page shows each connected account with:
+A signed-in PingCheck user owns a workspace. Each workspace can store multiple connected Instagram Professional accounts. The Integrations page shows each connected account with:
 
 - Instagram username
 - Instagram User ID
@@ -79,7 +79,7 @@ Automations can target any connected account or a specific connected account.
 ```text
 Instagram comment
 → Meta webhook
-→ PinkCheck Node API
+→ PingCheck Node API
 → identify connected Instagram account/workspace
 → create/update contact
 → find the first active matching automation
@@ -92,13 +92,13 @@ Only the first matching automation is executed for a comment because Instagram p
 
 ## Ads
 
-PinkCheck handles a comment webhook the same way whether it comes from organic content or an eligible Instagram ad-post comment: once Meta delivers a valid comment event for a connected Instagram Professional account, the matching automation can send the private details reply.
+PingCheck handles a comment webhook the same way whether it comes from organic content or an eligible Instagram ad-post comment: once Meta delivers a valid comment event for a connected Instagram Professional account, the matching automation can send the private details reply.
 
 Ad discovery and some non-organic/Marketing API workflows may require additional Meta business assets, permissions and App Review beyond the basic Instagram Login comment/messaging setup.
 
 ## Neon database
 
-PinkCheck now persists application data in Neon PostgreSQL. Configure `DATABASE_URL` in the root `.env` before running setup. See `docs/NEON_SETUP.md` for database creation, migration from the old JSON database, and startup steps.
+PingCheck now persists application data in Neon PostgreSQL. Configure `DATABASE_URL` in the root `.env` before running setup. See `docs/NEON_SETUP.md` for database creation, migration from the old JSON database, and startup steps.
 
 For larger production deployments, also add distributed rate limiting, background queues/retries, observability, backups, and robust token lifecycle management.
 

@@ -51,7 +51,7 @@ export default function Automations() {
   const newButton = <button className="automation-primary" onClick={() => setTemplatesOpen(true)}><Plus size={18}/> New Automation</button>;
   return <div className="automation-library">
     {templatesOpen && <TemplatePicker onClose={() => setTemplatesOpen(false)}/>}
-    <header className="automation-page-title"><h1>Automation</h1></header>
+    <header className="automation-page-title"><div><span>AUTOMATION STUDIO</span><h1>Automations</h1></div><small>Build, organize, and monitor your Instagram conversations.</small></header>
     <div className="automation-layout">
       <nav className="automation-subnav" aria-label="Automation navigation">
         <button className={!trash ? 'selected' : ''} onClick={() => show('all')}><Workflow size={16}/> My Automations</button>
@@ -59,8 +59,13 @@ export default function Automations() {
         <button disabled title="Sequences are not available yet"><ChevronsRight size={16}/> Sequences <small>Soon</small></button>
       </nav>
       <section className="automation-main" aria-labelledby="automation-library-heading">
-        <div className="automation-heading"><h2 id="automation-library-heading">{heading}</h2>{newButton}</div>
+        <div className="automation-heading"><div><span className="automation-kicker">WORKFLOWS</span><h2 id="automation-library-heading">{heading}</h2><p>Manage the journeys that turn comments into conversations.</p></div>{newButton}</div>
         {(error || err) && <div className="automation-error" role="alert">{err || error}{error && <button onClick={refresh}>Retry</button>}</div>}
+        {data && !trash && <div className="automation-summary">
+          <div><span>Total workflows</span><strong>{items.filter(a => !a.trashedAt).length}</strong><small>Across your workspace</small></div>
+          <div><span>Active now</span><strong>{items.filter(a => !a.trashedAt && a.status === 'ACTIVE').length}</strong><small><i className="summary-dot"/> Listening for comments</small></div>
+          <div><span>Successful runs</span><strong>{items.filter(a => !a.trashedAt).reduce((sum, a) => sum + Number(a.runs || 0), 0).toLocaleString()}</strong><small>All-time conversations</small></div>
+        </div>}
         <div className="automation-controls">
           <label className="automation-search"><Search size={18}/><input aria-label="Search automations" placeholder="Search all Automations" value={q} onChange={e => setQ(e.target.value)}/>{q && <button aria-label="Clear search" onClick={() => setQ('')}><X size={14}/></button>}</label>
           {visible.length > 0 && <select aria-label="Filter by status" value={status} onChange={e => setStatus(e.target.value)}><option value="ALL">All statuses</option><option value="ACTIVE">Active</option><option value="DRAFT">Draft</option><option value="PAUSED">Paused</option></select>}

@@ -31,6 +31,10 @@ export default function AutomationEditor() {
   const [mediaId, setMediaId] = useState('');
   const [publicReply, setPublicReply] = useState('Sent you a DM! 🚀');
   const [privateReply, setPrivateReply] = useState('Hey {{first_name}} 👋 Thanks for commenting! Here are the details you requested.');
+  const [requireFollow, setRequireFollow] = useState(true);
+  const [greetingReply, setGreetingReply] = useState('Hi {{first_name}}! Thanks for commenting 👋');
+  const [followPrompt, setFollowPrompt] = useState('Please follow our Instagram account, then reply DONE and I’ll send the details.');
+  const [notFollowingReply, setNotFollowingReply] = useState('I can’t confirm the follow yet. Please follow the account, wait a moment, then reply DONE again.');
   const [status, setStatus] = useState('DRAFT');
   const [accounts, setAccounts] = useState([]);
   const [media, setMedia] = useState([]);
@@ -83,6 +87,10 @@ export default function AutomationEditor() {
       setMediaId(a.mediaId || '');
       setPublicReply(a.publicReply || '');
       setPrivateReply(a.privateReply || '');
+      setRequireFollow(Boolean(a.requireFollow));
+      setGreetingReply(a.greetingReply || 'Hi {{first_name}}! Thanks for commenting 👋');
+      setFollowPrompt(a.followPrompt || 'Please follow our Instagram account, then reply DONE and I’ll send the details.');
+      setNotFollowingReply(a.notFollowingReply || 'I can’t confirm the follow yet. Please follow the account, wait a moment, then reply DONE again.');
       setStatus(a.status || 'DRAFT');
       const loadedNodes = Array.isArray(a.nodes) && a.nodes.length ? a.nodes : starterNodes;
       setNodes(loadedNodes);
@@ -98,7 +106,7 @@ export default function AutomationEditor() {
 
   const onConnect = useCallback((params) => setEdges((eds) => addEdge(params, eds)), [setEdges]);
   const requiredEdges = useMemo(() => ensurePrimaryEdge(nodes, edges), [nodes, edges]);
-  const payload = useMemo(() => ({ name, instagramAccountId: metaInstagramUserId, triggerScope, keyword, matchType, mediaId, publicReply, privateReply, nodes, edges: requiredEdges }), [name, metaInstagramUserId, triggerScope, keyword, matchType, mediaId, publicReply, privateReply, nodes, requiredEdges]);
+  const payload = useMemo(() => ({ name, instagramAccountId: metaInstagramUserId, triggerScope, keyword, matchType, mediaId, publicReply, privateReply, requireFollow, greetingReply, followPrompt, notFollowingReply, nodes, edges: requiredEdges }), [name, metaInstagramUserId, triggerScope, keyword, matchType, mediaId, publicReply, privateReply, requireFollow, greetingReply, followPrompt, notFollowingReply, nodes, requiredEdges]);
 
   const save = async () => {
     if (!name.trim()) { setError('Enter an automation name.'); return; }
@@ -178,7 +186,9 @@ export default function AutomationEditor() {
         <label>Match<select value={matchType} onChange={e => setMatchType(e.target.value)}><option value="CONTAINS">Contains</option><option value="EXACT">Exact</option></select></label>
         <label>Reply under the comment <span className="field-help">optional</span><input value={publicReply} onChange={e => setPublicReply(e.target.value)} placeholder="Sent you a DM! 🚀" /></label>
         <span className="eyebrow config-gap">PRIVATE DM</span>
-        <label>Message to send privately<textarea rows="7" value={privateReply} onChange={e => setPrivateReply(e.target.value)} /></label>
+        <label className="follow-gate-toggle"><span><input type="checkbox" checked={requireFollow} onChange={e => setRequireFollow(e.target.checked)}/> Require follow before sharing details</span><small>PingCheck sends a greeting first, waits for the person to reply, then checks their follow status.</small></label>
+        {requireFollow && <div className="follow-gate-fields"><span className="follow-step">1 · GREETING</span><label>First message<textarea rows="3" value={greetingReply} onChange={e => setGreetingReply(e.target.value)}/></label><span className="follow-step">2 · FOLLOW REQUEST</span><label>Ask them to follow and reply<textarea rows="4" value={followPrompt} onChange={e => setFollowPrompt(e.target.value)}/></label><span className="follow-step">IF NOT VERIFIED</span><label>Retry message<textarea rows="3" value={notFollowingReply} onChange={e => setNotFollowingReply(e.target.value)}/></label></div>}
+        <label>{requireFollow ? 'Details sent after follow verification' : 'Message to send privately'}<textarea rows="7" value={privateReply} onChange={e => setPrivateReply(e.target.value)} /></label>
         <div className="variable-row"><button type="button" onClick={() => setPrivateReply(v => v + ' {{first_name}}')}>{'{{first_name}}'}</button><button type="button" onClick={() => setPrivateReply(v => v + ' {{username}}')}>{'{{username}}'}</button><button type="button" onClick={() => setPrivateReply(v => `${v}${v && !v.endsWith('\n') ? '\n' : ''}https://example.com/details`)}><LinkIcon size={12} /> Add link</button></div>
       </aside>
     </div>

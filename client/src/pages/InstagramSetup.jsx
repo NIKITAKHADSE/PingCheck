@@ -79,7 +79,7 @@ export default function InstagramSetup({ editing = false }) {
     if (live && /\[add your[^\]]*\]/i.test(draft.privateReply)) { setError('Replace the template placeholders with your own details or link before going live.'); setStep(2); return; }
     setBusy(true);
     try {
-      await api(`/api/automations/${id}`, { method: 'PUT', body: JSON.stringify({ name: draft.name, instagramAccountId: account.instagramUserId, mediaId: scope === 'any' ? '' : mediaId, triggerScope: draft.triggerScope || 'ALL', keyword: draft.keyword, matchType: draft.matchType || 'CONTAINS', privateReply: draft.privateReply, publicReply: draft.publicReply }) });
+      await api(`/api/automations/${id}`, { method: 'PUT', body: JSON.stringify({ name: draft.name, instagramAccountId: account.instagramUserId, mediaId: scope === 'any' ? '' : mediaId, triggerScope: draft.triggerScope || 'ALL', keyword: draft.keyword, matchType: draft.matchType || 'CONTAINS', privateReply: draft.privateReply, publicReply: draft.publicReply, requireFollow: Boolean(draft.requireFollow), greetingReply: draft.greetingReply, followPrompt: draft.followPrompt, notFollowingReply: draft.notFollowingReply }) });
       if (live) { await api(`/api/automations/${id}/publish`, { method: 'POST' }); setDraft(d => ({ ...d, status: 'ACTIVE' })); }
       setNotice(live ? 'Your automation is live. New matching comments can trigger your reply.' : draft.status === 'ACTIVE' ? 'Changes saved to your active automation.' : 'Changes saved.');
     } catch (e) { setError(e.message); } finally { setBusy(false); }
@@ -110,7 +110,9 @@ export default function InstagramSetup({ editing = false }) {
         <label className="ig-field">Comment keyword<input value={draft.keyword} onChange={e => change('keyword', e.target.value)} placeholder="Leave empty for any comment"/></label>
         <label className="ig-field">Match<select value={draft.matchType || 'CONTAINS'} onChange={e => change('matchType', e.target.value)}><option value="CONTAINS">Contains keyword</option><option value="EXACT">Exact keyword</option></select></label>
         <label className="ig-field">Public reply (optional)<textarea rows={2} value={draft.publicReply} onChange={e => change('publicReply', e.target.value)}/></label>
-        <label className="ig-field">Private message<textarea rows={7} value={draft.privateReply} onChange={e => change('privateReply', e.target.value)}/></label>
+        <label className="ig-follow-toggle"><input type="checkbox" checked={Boolean(draft.requireFollow)} onChange={e => change('requireFollow', e.target.checked)}/><span><strong>Require a follow first</strong><small>Ask the person to follow and reply before sending the details.</small></span></label>
+        {draft.requireFollow && <div className="ig-follow-fields"><label className="ig-field">Greeting<textarea rows={3} value={draft.greetingReply || ''} onChange={e => change('greetingReply', e.target.value)}/></label><label className="ig-field">Follow request<textarea rows={4} value={draft.followPrompt || ''} onChange={e => change('followPrompt', e.target.value)}/></label><label className="ig-field">Not followed yet message<textarea rows={3} value={draft.notFollowingReply || ''} onChange={e => change('notFollowingReply', e.target.value)}/></label></div>}
+        <label className="ig-field">{draft.requireFollow ? 'Details after follow verification' : 'Private message'}<textarea rows={7} value={draft.privateReply} onChange={e => change('privateReply', e.target.value)}/></label>
         <p className="ig-setup-note">Add your real details or link. {'{{first_name}}'} is replaced with the commenter’s name.</p>
         <div className="ig-step-actions"><button className="ig-button" onClick={() => { setStep(1); setTab('Post'); }}>Back</button><button className="ig-button" disabled={busy} onClick={() => save(false)}>{draft.status === 'ACTIVE' ? 'Save changes' : 'Save draft'}</button></div>
       </>}

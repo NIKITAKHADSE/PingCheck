@@ -1,4 +1,6 @@
 import './config.js';
+import fs from 'node:fs/promises';
+import path from 'node:path';
 import pg from 'pg';
 import { createDbAccess } from './db-access.js';
 
@@ -25,13 +27,10 @@ export const defaultData = {
 };
 
 const COLLECTIONS = Object.keys(defaultData);
-const DATABASE_URL = String(process.env.DATABASE_URL || '').trim();
-
-if (!DATABASE_URL) {
-  throw new Error('DATABASE_URL is required. Create a Neon PostgreSQL database and add its connection string to the root .env file.');
-}
-
-const pool = new Pool({
+const USE_LOCAL_DB = String(process.env.LOCAL_DATABASE || '').toLowerCase() === 'true';
+const DATABASE_URL = USE_LOCAL_DB ? '' : String(process.env.DATABASE_URL || '').trim();
+const LOCAL_DB_PATH = path.resolve(process.cwd(), path.basename(process.cwd()).toLowerCase() === 'server' ? 'data/db.json' : 'server/data/db.json');
+const pool = DATABASE_URL ? new Pool({
   connectionString: DATABASE_URL,
   max: Number(process.env.DB_POOL_MAX || 10),
   idleTimeoutMillis: 30_000,
@@ -39,7 +38,7 @@ const pool = new Pool({
   ssl: DATABASE_URL.includes('localhost') || DATABASE_URL.includes('127.0.0.1')
     ? false
     : { rejectUnauthorized: false }
-});
+}) : null;
 
 let schemaReady;
 let baseline = structuredClone(defaultData);
@@ -94,6 +93,29 @@ async function loadAll() {
   return data;
 }
 
+async function loadLocal() {
+  try {
+    const stored = JSON.parse(await fs.readFile(LOCAL_DB_PATH, 'utf8'));
+    const data = clone(defaultData);
+    for (const collection of COLLECTIONS) {
+      if (Array.isArray(stored?.[collection])) data[collection] = stored[collection];
+    }
+    return data;
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+    await fs.mkdir(path.dirname(LOCAL_DB_PATH), { recursive: true });
+    await fs.writeFile(LOCAL_DB_PATH, JSON.stringify(defaultData, null, 2));
+    return clone(defaultData);
+  }
+}
+
+async function writeLocal(data) {
+  await fs.mkdir(path.dirname(LOCAL_DB_PATH), { recursive: true });
+  const temporaryPath = `${LOCAL_DB_PATH}.${process.pid}.tmp`;
+  await fs.writeFile(temporaryPath, JSON.stringify(data, null, 2));
+  await fs.rename(temporaryPath, LOCAL_DB_PATH);
+}
+
 async function persistDiff(current, previous) {
   await ensureSchema();
   const client = await pool.connect();
@@ -139,21 +161,23 @@ async function persistDiff(current, previous) {
 export const db = {
   data: clone(defaultData),
   async read() {
-    this.data = await loadAll();
+    this.data = DATABASE_URL ? await loadAll() : await loadLocal();
     baseline = clone(this.data);
     return this.data;
   },
   async write() {
-    await persistDiff(this.data, baseline);
+    if (DATABASE_URL) await persistDiff(this.data, baseline);
+    else await writeLocal(this.data);
     baseline = clone(this.data);
   }
 };
 
 export async function closeDb() {
-  await pool.end();
+  if (pool) await pool.end();
 }
 
 export async function pingDb() {
+  if (!pool) return { local: true, path: LOCAL_DB_PATH };
   await ensureSchema();
   const result = await pool.query('SELECT NOW() AS now');
   return result.rows[0]?.now || null;
